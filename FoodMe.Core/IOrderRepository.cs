@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace FoodMe.Core
 {
     public interface IOrderRepository
     {
-        void Save(Order order);
+        Task SaveAsync(Order order);
     }
 }

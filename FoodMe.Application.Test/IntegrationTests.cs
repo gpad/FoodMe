@@ -6,23 +6,32 @@ namespace FoodMe.Application.Test
 {
     public class IntegrationTests
     {
+        private static readonly string ConnectionString = "Data Source=127.0.0.1,1433;Initial Catalog=FoodMeDev;User ID=SA;Password=StrongPassword1;";
         private User user;
-        private Product shampoo;
-        private Product soap;
+        private Product shampoo = new Product(ProductId.New(), "shampoo", 12.32M);
+        private Product soap = new Product(ProductId.New(), "soap", 3.42M);
         private ICartRepository cartRepository;
-        private ReadModel.IProductsReadModel productsReadModel;
         private IOrderRepository orderRepository;
+        private ReadModel.IProductsReadModel productsReadModel;
         private ReadModel.IOrderReadModel orderReadModel;
 
         [SetUp]
         public void Setup()
         {
             user = new User(UserId.New());
+            cartRepository = new SqlCartRepository(ConnectionString);
+            orderRepository = new SqlOrderRepository(ConnectionString);
+            productsReadModel = new InMemoryProductsReadModel();
+            orderReadModel = new InMemoryOrderReadModel();
         }
 
-        private FoodMe.ReadModel.Product MostSeenProduct(Product shampo, int v)
+        private FoodMe.ReadModel.Product MostSeenProduct(Product product, int quantity)
         {
-            throw new NotImplementedException();
+            return new FoodMe.ReadModel.Product(
+                product.Id,
+                product.Name,
+                product.Price,
+                quantity);
         }
 
         private FoodMe.ReadModel.Order ReadModelOrderFrom(Order order)
@@ -37,7 +46,7 @@ namespace FoodMe.Application.Test
             cart.AddProduct(shampoo, 2);
             cart.AddProduct(soap, 1);
 
-            cartRepository.Save(cart);
+            cartRepository.SaveAsync(cart);
 
             Assert.That(() => productsReadModel.GetMostSeen(), Is.EqualTo(new[]{
                 MostSeenProduct(shampoo, 2),
@@ -51,10 +60,10 @@ namespace FoodMe.Application.Test
             var cart = Cart.CreateEmptyFor(user);
             cart.AddProduct(shampoo, 2);
             cart.AddProduct(soap, 1);
-            cartRepository.Save(cart);
+            cartRepository.SaveAsync(cart);
 
             var order = Order.Checkout(cart);
-            orderRepository.Save(order);
+            orderRepository.SaveAsync(order);
 
             var orders = orderReadModel.GetAllFor(cart.ShopId);
 

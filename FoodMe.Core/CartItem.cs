@@ -1,14 +1,18 @@
+using System;
+
 namespace FoodMe.Core
 {
     public class CartItem
     {
-        private ProductId productId;
-        private int quantity;
+        public Guid Id {get;}
+        public ProductId ProductId { get; }
+        public int Quantity { get; }
+        public string Description { get; }
 
-        public CartItem(ProductId productId, int quantity)
+        public CartItem(Guid Id, ProductId productId, int quantity)
         {
-            this.productId = productId;
-            this.quantity = quantity;
+            this.ProductId = productId;
+            this.Quantity = quantity;
         }
     }
 }
