@@ -53,6 +53,7 @@ namespace FoodMe.Application.Test
                 tables.AsList().ForEach(table => sqlConnection.Execute($"DELETE from {table}"));
             }
         }
+
         private FoodMe.ReadModel.Product MostSeenProduct(Product product, int quantity)
         {
             return new FoodMe.ReadModel.Product(
@@ -78,7 +79,7 @@ namespace FoodMe.Application.Test
 
             Assert.That(productsReadModel.GetMostSeen(), Is.EqualTo(new[]{
                 MostSeenProduct(shampoo, 2),
-                MostSeenProduct(shampoo, 2),
+                MostSeenProduct(soap, 1),
             }));
         }
 
