@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    container_name: food_me_sql
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=StrongPassword1
+
