@@ -2,7 +2,7 @@ using System;
 
 namespace FoodMe.Core
 {
-    public class Policy : IDisposable
+    public abstract class Policy : IDisposable
     {
 
         #region IDisposable Support
@@ -23,6 +23,8 @@ namespace FoodMe.Core
                 disposedValue = true;
             }
         }
+
+        public abstract void Start();
 
         // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         // ~Policy()

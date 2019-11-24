@@ -5,5 +5,10 @@ namespace FoodMe.Core
         public WarehouseUpdater()
         {
         }
+
+        public override void Start()
+        {
+            // throw new System.NotImplementedException();
+        }
     }
 }

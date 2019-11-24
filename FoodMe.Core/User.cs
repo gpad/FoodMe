@@ -2,11 +2,11 @@ namespace FoodMe.Core
 {
     public class User
     {
-        private object p;
+        private UserId userId;
 
-        public User(object p)
+        public User(UserId userId)
         {
-            this.p = p;
+            this.userId = userId;
         }
     }
 }

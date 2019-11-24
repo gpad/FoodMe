@@ -6,6 +6,8 @@ namespace FoodMe
 {
     internal class Policies : IDisposable
     {
+        List<Policy> policies = new List<Policy>();
+
         public Policies()
         {
         }
@@ -32,12 +34,12 @@ namespace FoodMe
 
         internal void Add(IEnumerable<Policy> policies)
         {
-            throw new NotImplementedException();
+            this.policies.AddRange(policies);
         }
 
         internal void Start()
         {
-            throw new NotImplementedException();
+            this.policies.ForEach(policy => policy.Start());
         }
         #endregion
     }

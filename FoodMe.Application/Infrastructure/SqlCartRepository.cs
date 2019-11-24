@@ -74,5 +74,10 @@ namespace FoodMe.Application.Infrastructure
                 Payload = JsonConvert.SerializeObject(events)
             });
         }
+
+        public Task<Cart> LoadAsync(CartId cartId)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
