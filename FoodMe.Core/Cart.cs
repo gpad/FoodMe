@@ -33,6 +33,7 @@ namespace FoodMe.Core
                 new CartItem(
                     Guid.NewGuid(),
                     productAdded.ProductId,
+                    "",
                     productAdded.Quantity));
         }
 

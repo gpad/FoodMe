@@ -9,8 +9,10 @@ namespace FoodMe.Core
         public int Quantity { get; }
         public string Description { get; }
 
-        public CartItem(Guid Id, ProductId productId, int quantity)
+        public CartItem(Guid id, ProductId productId, string name, int quantity)
         {
+            this.Id = id;
+            this.Description = name;
             this.ProductId = productId;
             this.Quantity = quantity;
         }

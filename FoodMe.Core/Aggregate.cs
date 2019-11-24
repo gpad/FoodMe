@@ -6,6 +6,7 @@ namespace FoodMe.Core
     {
         public const long NewAggregateVersion = -1;
         private long version = NewAggregateVersion;
+        public long NextAggregateVersion => version +1;
 
         private readonly List<DomainEvent<TAggregateId>> uncommittedEvents = new List<DomainEvent<TAggregateId>>();
 

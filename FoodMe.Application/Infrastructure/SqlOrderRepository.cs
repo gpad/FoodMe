@@ -7,10 +7,12 @@ namespace FoodMe.Core
     public class SqlOrderRepository : IOrderRepository
     {
         private string connectionString;
+        private readonly IDomainEventPublisher publisher;
 
-        public SqlOrderRepository(string connectionString)
+        public SqlOrderRepository(string connectionString, IDomainEventPublisher publisher)
         {
             this.connectionString = connectionString;
+            this.publisher = publisher;
         }
 
         public async Task SaveAsync(Order order)

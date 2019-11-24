@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FoodMe.Core;
 
@@ -22,6 +23,11 @@ namespace FoodMe.ReadModel
         public override bool Equals(object obj)
         {
             return Equals (obj as Product);
+        }
+
+        internal Product Add(int quantity)
+        {
+            return new Product(Id, Name, Price, Quantity + quantity);
         }
 
         // override object.GetHashCode

@@ -1,4 +1,8 @@
 using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using Dapper;
+using FoodMe.Application.Migrations;
 using FoodMe.Core;
 using NUnit.Framework;
 
@@ -14,17 +18,40 @@ namespace FoodMe.Application.Test
         private IOrderRepository orderRepository;
         private ReadModel.IProductsReadModel productsReadModel;
         private ReadModel.IOrderReadModel orderReadModel;
+        private DomainEventPubSub domainEventPubSub;
+
+        [OneTimeSetUp]
+        public void DataBaseFixtureOneTimeSetUp()
+        {
+            Migrator.MigrateDb(ConnectionString);
+        }
 
         [SetUp]
         public void Setup()
         {
+            DeleteTables("carts", "cart_items");
             user = new User(UserId.New());
-            cartRepository = new SqlCartRepository(ConnectionString);
-            orderRepository = new SqlOrderRepository(ConnectionString);
-            productsReadModel = new InMemoryProductsReadModel();
+            domainEventPubSub = new DomainEventPubSub();
+            cartRepository = new SqlCartRepository(ConnectionString, domainEventPubSub);
+            orderRepository = new SqlOrderRepository(ConnectionString, domainEventPubSub);
+            productsReadModel = new InMemoryProductsReadModel(domainEventPubSub);
             orderReadModel = new InMemoryOrderReadModel();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            domainEventPubSub.Dispose();
+        }
+
+        protected void DeleteTables(params string[] tables)
+        {
+            using (var sqlConnection = new SqlConnection(ConnectionString))
+            {
+                sqlConnection.Open();
+                tables.AsList().ForEach(table => sqlConnection.Execute($"DELETE from {table}"));
+            }
+        }
         private FoodMe.ReadModel.Product MostSeenProduct(Product product, int quantity)
         {
             return new FoodMe.ReadModel.Product(
@@ -40,15 +67,15 @@ namespace FoodMe.Application.Test
         }
 
         [Test]
-        public void AddingProductToCartPopulateProductsReadModel()
+        public async Task AddingProductToCartPopulateProductsReadModel()
         {
             var cart = Cart.CreateEmptyFor(user);
             cart.AddProduct(shampoo, 2);
             cart.AddProduct(soap, 1);
 
-            cartRepository.SaveAsync(cart);
+            await cartRepository.SaveAsync(cart);
 
-            Assert.That(() => productsReadModel.GetMostSeen(), Is.EqualTo(new[]{
+            Assert.That(productsReadModel.GetMostSeen(), Is.EqualTo(new[]{
                 MostSeenProduct(shampoo, 2),
                 MostSeenProduct(shampoo, 2),
             }));

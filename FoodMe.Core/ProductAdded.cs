@@ -9,8 +9,8 @@ namespace FoodMe.Core
         public ProductId ProductId {get;}
         public int Quantity {get;}
 
-        public ProductAdded(CartId cartId, ProductId productId, int quantity)
-            :base(cartId)
+        private ProductAdded(CartId cartId, ProductId productId, int quantity, long aggregateVersion)
+            :base(cartId, aggregateVersion)
         {
             this.CartId = cartId;
             this.ProductId = productId;
@@ -19,7 +19,7 @@ namespace FoodMe.Core
 
         public static ProductAdded For(Cart cart, Product product, int quantity)
         {
-            return new ProductAdded(cart.Id, product.Id, quantity);
+            return new ProductAdded(cart.Id, product.Id, quantity, cart.NextAggregateVersion + 1);
         }
 
         public override bool Equals(object obj)
