@@ -10,14 +10,24 @@ namespace FoodMe.Application.Test
         private Product shampoo;
         private Product soap;
         private ICartRepository cartRepository;
-        private IProductsReadModel productsReadModel;
+        private ReadModel.IProductsReadModel productsReadModel;
         private IOrderRepository orderRepository;
-        private IOrderReadModel orderReadModel;
+        private ReadModel.IOrderReadModel orderReadModel;
 
         [SetUp]
         public void Setup()
         {
             user = new User(UserId.New());
+        }
+
+        private FoodMe.ReadModel.Product MostSeenProduct(Product shampo, int v)
+        {
+            throw new NotImplementedException();
+        }
+
+        private FoodMe.ReadModel.Order ReadModelOrderFrom(Order order)
+        {
+            throw new NotImplementedException();
         }
 
         [Test]
@@ -29,15 +39,10 @@ namespace FoodMe.Application.Test
 
             cartRepository.Save(cart);
 
-            Assert.That(() => productsReadModel.GetMostSeenProducts(), Is.EqualTo(new[]{
-                MostSeenItem(shampoo, 2),
-                MostSeenItem(shampoo, 2),
+            Assert.That(() => productsReadModel.GetMostSeen(), Is.EqualTo(new[]{
+                MostSeenProduct(shampoo, 2),
+                MostSeenProduct(shampoo, 2),
             }));
-        }
-
-        private object MostSeenItem(object shampo, int v)
-        {
-            throw new NotImplementedException();
         }
 
         [Test]
@@ -51,14 +56,10 @@ namespace FoodMe.Application.Test
             var order = Order.Checkout(cart);
             orderRepository.Save(order);
 
-            var orders = orderReadModel.GetAllOrderFor(cart.ShopId);
+            var orders = orderReadModel.GetAllFor(cart.ShopId);
 
-            Assert.That(orders, Is.EqualTo(new []{ReadModelOrderFrom(order)}));
+            Assert.That(orders, Is.EqualTo(new[] { ReadModelOrderFrom(order) }));
         }
 
-        private FoodMe.ReadModel.Order ReadModelOrderFrom(Order order)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

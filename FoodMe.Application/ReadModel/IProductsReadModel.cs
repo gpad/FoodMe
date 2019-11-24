@@ -1,7 +1,9 @@
-namespace FoodMe.Application.Test
+using System.Collections.Generic;
+
+namespace FoodMe.ReadModel
 {
     public interface IProductsReadModel
     {
-        object GetMostSeenProducts();
+        IEnumerable<Product> GetMostSeen();
     }
 }

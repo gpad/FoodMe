@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using FoodMe.Core;
 
-namespace FoodMe.Application.Test
+namespace FoodMe.ReadModel
 {
     public interface IOrderReadModel
     {
-        object GetAllOrderFor(ShopId shopId);
+        IEnumerable<Order> GetAllFor(ShopId shopId);
     }
 }
