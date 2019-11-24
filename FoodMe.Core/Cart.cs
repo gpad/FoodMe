@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FoodMe.Core
 {
@@ -22,22 +23,31 @@ namespace FoodMe.Core
             this.ShopId = shopId;
         }
 
-        public void AddProduct(Product product, int quantity)
+        protected Cart(IEnumerable<DomainEvent<CartId>> events)
         {
-            Emit(ProductAdded.For(this, product, quantity));
+            Apply(events);
+        }
+
+        public Guid AddProduct(Product product, int quantity)
+        {
+            Guid itemId = Guid.NewGuid();
+            Emit(ProductAdded.For(this, itemId, product, quantity));
+            return itemId;
         }
 
         public void When(ProductAdded productAdded)
         {
             this.cartItems.Add(
                 new CartItem(
-                    Guid.NewGuid(),
+                    productAdded.ItemId,
                     productAdded.ProductId,
                     "",
                     productAdded.Quantity));
         }
 
+        public static Cart FromEvents(IEnumerable<DomainEvent<CartId>> events)
+        {
+            return new Cart(events);
+        }
     }
-
-
 }

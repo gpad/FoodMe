@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace FoodMe.Application.Test
 {
-    public class IntegrationTests
+    public class SqlCartRepositoryTest
     {
         private static readonly string ConnectionString = "Data Source=127.0.0.1,1433;Initial Catalog=FoodMeDev;User ID=SA;Password=StrongPassword1;";
         private User user;
@@ -69,34 +69,18 @@ namespace FoodMe.Application.Test
         }
 
         [Test]
-        public async Task AddingProductToCartPopulateProductsReadModel()
+        public async Task StoreAndLoadCart()
         {
             var cart = Cart.CreateEmptyFor(user);
             cart.AddProduct(shampoo, 2);
             cart.AddProduct(soap, 1);
 
             await cartRepository.SaveAsync(cart);
+            var loadedCart = await cartRepository.LoadAsync(cart.Id);
 
-            Assert.That(productsReadModel.GetMostSeen(), Is.EqualTo(new[]{
-                MostSeenProduct(shampoo, 2),
-                MostSeenProduct(soap, 1),
-            }));
-        }
-
-        [Test]
-        public void CheckOutCartPlaceOrderToProperShop()
-        {
-            var cart = Cart.CreateEmptyFor(user);
-            cart.AddProduct(shampoo, 2);
-            cart.AddProduct(soap, 1);
-            cartRepository.SaveAsync(cart);
-
-            var order = Order.Checkout(cart);
-            orderRepository.SaveAsync(order);
-
-            var orders = orderReadModel.GetAllFor(cart.ShopId);
-
-            Assert.That(orders, Is.EqualTo(new[] { ReadModelOrderFrom(order) }));
+            Assert.That(cart.Items, Is.EqualTo(loadedCart.Items));
+            Assert.That(cart.NextAggregateVersion, Is.EqualTo(loadedCart.NextAggregateVersion));
+            Assert.That(cart.Id, Is.EqualTo(loadedCart.Id));
         }
     }
 }

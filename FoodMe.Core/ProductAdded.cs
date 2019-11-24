@@ -6,20 +6,22 @@ namespace FoodMe.Core
     public class ProductAdded : DomainEvent<CartId>
     {
         public CartId CartId {get; }
+        public Guid ItemId {get; }
         public ProductId ProductId {get;}
         public int Quantity {get;}
 
-        private ProductAdded(CartId cartId, ProductId productId, int quantity, long aggregateVersion)
+        public ProductAdded(CartId cartId, Guid itemId, ProductId productId, int quantity, long aggregateVersion)
             :base(cartId, aggregateVersion)
         {
             this.CartId = cartId;
+            this.ItemId = itemId;
             this.ProductId = productId;
             this.Quantity = quantity;
         }
 
-        public static ProductAdded For(Cart cart, Product product, int quantity)
+        public static ProductAdded For(Cart cart, Guid itemId, Product product, int quantity)
         {
-            return new ProductAdded(cart.Id, product.Id, quantity, cart.NextAggregateVersion + 1);
+            return new ProductAdded(cart.Id, itemId, product.Id, quantity, cart.NextAggregateVersion + 1);
         }
 
         public override bool Equals(object obj)

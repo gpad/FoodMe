@@ -19,12 +19,12 @@ namespace FoodMe.Core.Test
         {
             var cart = Cart.CreateEmptyFor(user);
 
-            cart.AddProduct(shampoo, 1);
-            cart.AddProduct(soap, 1);
+            var itemId1 = cart.AddProduct(shampoo, 1);
+            var itemId2 = cart.AddProduct(soap, 1);
 
             Assert.That(cart.GetUncommittedEvents(), Is.EqualTo(new[]{
-                ProductAdded.For(cart, shampoo, 1),
-                ProductAdded.For(cart, soap, 1)
+                ProductAdded.For(cart, itemId1, shampoo, 1),
+                ProductAdded.For(cart, itemId2, soap, 1)
             }));
         }
 

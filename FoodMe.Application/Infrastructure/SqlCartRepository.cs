@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -36,18 +37,44 @@ namespace FoodMe.Application.Infrastructure
                         transaction: transaction);
                     await sqlConnection.ExecuteAsync(
                         "insert events (id, aggregate_id, version, event_type, payload) values (@Id, @AggregateId, @Version, @EventType, @Payload)",
-                        GetEventsFrom(cart.GetUncommittedEvents()),
+                        GetRowEventsFrom(cart.GetUncommittedEvents()),
                         transaction: transaction
                     );
                     await transaction.CommitAsync();
                     await PublisEvents(cart.GetUncommittedEvents());
+                    cart.ClearUncommittedEvents();
                 }
             }
         }
 
+        public async Task<Cart> LoadAsync(CartId cartId)
+        {
+            using (var sqlConnection = new SqlConnection(connectionString))
+            {
+                await sqlConnection.OpenAsync();
+                var eventRows = await sqlConnection.QueryAsync(
+                    "select event_type, payload from events where aggregate_id = @AggregareId order by version ASC ",
+                    new { AggregareId = cartId.Id });
+                IEnumerable<DomainEvent<CartId>> events = GetEventsFrom(eventRows);
+                return Cart.FromEvents(events);
+            }
+        }
+
+        private IEnumerable<DomainEvent<CartId>> GetEventsFrom(IEnumerable<dynamic> eventRows)
+        {
+            return eventRows.Select(row =>
+            {
+                Type typeToDeseralize = Type.GetType(row.event_type);
+                return (DomainEvent<CartId>)Newtonsoft.Json.JsonConvert.DeserializeObject(
+                    row.payload,
+                    typeToDeseralize);
+            });
+        }
+
         private IEnumerable<dynamic> GetSqlCartItems(IEnumerable<CartItem> items)
         {
-            return items.Select(item => new{
+            return items.Select(item => new
+            {
                 Id = item.Id,
                 ProductId = item.ProductId.Id,
                 Description = "item.Description",
@@ -63,21 +90,16 @@ namespace FoodMe.Application.Infrastructure
             }
         }
 
-        private IEnumerable<dynamic> GetEventsFrom(IEnumerable<DomainEvent<CartId>> events)
+        private IEnumerable<dynamic> GetRowEventsFrom(IEnumerable<DomainEvent<CartId>> events)
         {
-            return events.Select(e => new
+            return events.Select(evt => new
             {
-                Id = e.EventId,
-                AggregateId = e.AggregateId.Id,
-                Version = e.AggregateVersion,
-                EventType = e.GetType().ToString(),
-                Payload = JsonConvert.SerializeObject(events)
+                Id = evt.EventId,
+                AggregateId = evt.AggregateId.Id,
+                Version = evt.AggregateVersion,
+                EventType = evt.GetType().AssemblyQualifiedName,
+                Payload = JsonConvert.SerializeObject(evt)
             });
-        }
-
-        public Task<Cart> LoadAsync(CartId cartId)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
