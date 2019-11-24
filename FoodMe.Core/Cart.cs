@@ -3,23 +3,58 @@ using System.Collections.Generic;
 
 namespace FoodMe.Core
 {
-    public class Cart
+    public class Cart : Aggregate<CartId>
     {
-        public ShopId ShopId { get;}
+        private readonly List<CartItem> cartItems = new List<CartItem>();
+
+        public IEnumerable<CartItem> Items => cartItems;
+
+        public ShopId ShopId { get; }
 
         public static Cart CreateEmptyFor(User user)
         {
-            throw new NotImplementedException();
+            return new Cart(CartId.New(), ShopId.New());
         }
 
-        public void AddProduct(Product shampoo, int v)
+        protected Cart(CartId id, ShopId shopId)
         {
-            throw new NotImplementedException();
+            this.Id = id;
+            this.ShopId = shopId;
         }
 
-        public IEnumerable<DomainEvent> GetUncommittedEvents()
+        public void AddProduct(Product product, int quantity)
         {
-            throw new NotImplementedException();
+            Emit(ProductAdded.For(this, product, quantity));
         }
+
+        public void When(ProductAdded productAdded)
+        {
+            this.cartItems.Add(new CartItem(productAdded.ProductId, productAdded.Quantity));
+        }
+
     }
+
+    public class Aggregate<TAggregateId>
+    {
+        public const long NewAggregateVersion = -1;
+        private long version = NewAggregateVersion;
+
+        private readonly List<DomainEvent<TAggregateId>> uncommittedEvents = new List<DomainEvent<TAggregateId>>();
+
+        public TAggregateId Id { get; protected set;}
+
+        protected void Emit(DomainEvent<TAggregateId> @event)
+        {
+            this.uncommittedEvents.Add(@event);
+            ((dynamic)this).When((dynamic)@event);
+        }
+
+        public IEnumerable<DomainEvent<TAggregateId>> GetUncommittedEvents()
+        {
+            return this.uncommittedEvents;
+        }
+
+    }
+
+
 }

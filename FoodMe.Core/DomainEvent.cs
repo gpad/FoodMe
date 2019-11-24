@@ -1,6 +1,19 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+
 namespace FoodMe.Core
 {
-    public class DomainEvent
+    public abstract class DomainEvent<TAggregateId> : IEquatable<DomainEvent<TAggregateId>>
     {
+        public TAggregateId AggregateId { get; }
+        // public Guid EventId { get; private set; }
+
+        public DomainEvent(TAggregateId aggregateId)
+        {
+            AggregateId = aggregateId;
+            // EventId = Guid.NewGuid();
+        }
+
+        public abstract bool Equals([AllowNull] DomainEvent<TAggregateId> other);
     }
 }

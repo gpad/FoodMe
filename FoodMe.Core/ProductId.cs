@@ -2,18 +2,18 @@ using System;
 
 namespace FoodMe.Core
 {
-    public class ShopId
+    public class ProductId //: IAggregateId
     {
-        private const string IdAsStringPrefix = "Shop-";
+        private const string IdAsStringPrefix = "Product-";
 
         public Guid Id { get; private set; }
 
-        private ShopId(Guid id)
+        private ProductId(Guid id)
         {
             Id = id;
         }
 
-        public ShopId(string id)
+        public ProductId(string id)
         {
             Id = Guid.Parse(id.StartsWith(IdAsStringPrefix) ? id.Substring(IdAsStringPrefix.Length) : id);
         }
@@ -25,7 +25,7 @@ namespace FoodMe.Core
 
         public override bool Equals(object obj)
         {
-            return obj is ShopId && Equals(Id, ((ShopId)obj).Id);
+            return obj is ProductId && Equals(Id, ((ProductId)obj).Id);
         }
 
         public override int GetHashCode()
@@ -33,14 +33,24 @@ namespace FoodMe.Core
             return Id.GetHashCode();
         }
 
-        public static ShopId New()
+        public static ProductId New()
         {
-            return new ShopId(Guid.NewGuid());
+            return new ProductId(Guid.NewGuid());
         }
 
         public string IdAsString()
         {
             return $"{IdAsStringPrefix}{Id.ToString()}";
+        }
+
+        public static bool operator !=(ProductId left, ProductId right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator ==(ProductId left, ProductId right)
+        {
+            return Equals(left?.Id, right?.Id);
         }
     }
 }
