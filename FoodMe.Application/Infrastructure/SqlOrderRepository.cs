@@ -1,8 +1,9 @@
 ﻿using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using FoodMe.Core;
 
-namespace FoodMe.Core
+namespace FoodMe.Application.Infrastructure
 {
     public class SqlOrderRepository : IOrderRepository
     {

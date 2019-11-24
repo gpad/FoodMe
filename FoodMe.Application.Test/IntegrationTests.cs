@@ -2,6 +2,7 @@ using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using FoodMe.Application.Infrastructure;
 using FoodMe.Application.Migrations;
 using FoodMe.Core;
 using NUnit.Framework;

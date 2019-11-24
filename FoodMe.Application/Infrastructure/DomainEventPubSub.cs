@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FoodMe.Core;
 
-namespace FoodMe.Core
+namespace FoodMe.Application.Infrastructure
 {
     public class DomainEventPubSub : IDisposable, IDomainEventSubscriber, IDomainEventPublisher
     {

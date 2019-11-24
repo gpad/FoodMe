@@ -1,25 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using FoodMe.Core;
 using Newtonsoft.Json;
 
-namespace FoodMe.Core
+namespace FoodMe.Application.Infrastructure
 {
-    public interface IDomainEventPublisher
-    {
-        Task PublishAsync<T>(T publishedEvent);
-    }
-
-    public interface IDomainEventSubscriber
-    {
-        void Subscribe<T>(Action<T> handler);
-
-        void Subscribe<T>(Func<T, Task> handler);
-    }
     public class SqlCartRepository : ICartRepository
     {
         private string connectionString;

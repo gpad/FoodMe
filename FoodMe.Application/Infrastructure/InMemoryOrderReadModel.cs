@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using FoodMe.Core;
 
-namespace FoodMe.Core
+namespace FoodMe.Application.Infrastructure
 {
     public class InMemoryOrderReadModel : ReadModel.IOrderReadModel
     {

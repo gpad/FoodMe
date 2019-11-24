@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using FoodMe.Core;
 
-namespace FoodMe.Core
+namespace FoodMe.Application.Infrastructure
 {
     public class InMemoryProductsReadModel : ReadModel.IProductsReadModel
     {
